@@ -34,4 +34,12 @@ public class JogoDeTabuleiroPersistenceAdapter implements JogoDeTabuleiroReposit
         JogoDeTabuleiroJpaEntity jogoDeTabuleiroJpaEntity = jogoDeTabuleiroMapper.paraEntidade(jogoDeTabuleiro);
         return jogoDeTabuleiroMapper.paraDominio(jogoDeTabuleiroRepository.save(jogoDeTabuleiroJpaEntity));
     }
+
+    @Override
+    public List<JogoDeTabuleiro> findByTituloContainingIgnoreCase(String titulo) {
+
+        List<JogoDeTabuleiroJpaEntity> jogoDeTabuleiroJpaEntities = jogoDeTabuleiroRepository.findByTituloContainingIgnoreCase(titulo);
+
+        return jogoDeTabuleiroJpaEntities.stream().map(jogoDeTabuleiroMapper::paraDominio).toList();
+    }
 }

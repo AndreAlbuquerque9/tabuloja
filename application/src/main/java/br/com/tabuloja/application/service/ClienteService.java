@@ -1,5 +1,6 @@
 package br.com.tabuloja.application.service;
 
+import br.com.tabuloja.application.exception.ClienteNaoEcontradoException;
 import br.com.tabuloja.application.port.ClienteRepositoryPort;
 import br.com.tabuloja.domain.Cliente;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,6 @@ public class ClienteService {
 
     public Cliente buscarPorCpf(String cpf) {
         return clienteRepositoryPort.buscarPorCpf(cpf)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(() -> new ClienteNaoEcontradoException("Cliente com CPF " + cpf + " não econtrado"));
     }
 }

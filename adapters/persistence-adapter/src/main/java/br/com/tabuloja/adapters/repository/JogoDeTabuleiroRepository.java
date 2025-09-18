@@ -4,8 +4,10 @@ import br.com.tabuloja.adapters.persistence.JogoDeTabuleiroJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
 public interface JogoDeTabuleiroRepository extends JpaRepository<JogoDeTabuleiroJpaEntity, UUID> {
+    List<JogoDeTabuleiroJpaEntity> findByTituloContainingIgnoreCase(String titulo);
 }

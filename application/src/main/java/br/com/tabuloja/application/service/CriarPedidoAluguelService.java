@@ -1,5 +1,8 @@
 package br.com.tabuloja.application.service;
 
+import br.com.tabuloja.application.exception.ClienteNaoEcontradoException;
+import br.com.tabuloja.application.exception.JogoNaoDisponivelException;
+import br.com.tabuloja.application.exception.JogoNaoEncontradoException;
 import br.com.tabuloja.application.port.*;
 import br.com.tabuloja.domain.*;
 import org.springframework.stereotype.Service;
@@ -7,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class CriarPedidoAluguelService {
@@ -35,20 +39,19 @@ public class CriarPedidoAluguelService {
     public PedidoAluguel executar(CriarPedidoAluguelCommand command) {
 
         Cliente cliente = clienteRepositoryPort.buscarPorCpf(command.clienteCpf())
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(() -> new ClienteNaoEcontradoException("Cliente com CPF " + command.clienteCpf() + " não econtrado"));
 
         List<JogoDeTabuleiro> jogosParaAlugar = jogoDeTabuleiroRepositoryPort.findAllById(command.jogosIds());
         if (jogosParaAlugar.size() != command.jogosIds().size()) {
-            throw new RuntimeException("Um ou mais jogos solicitaodos não foram encontrados");
+            throw new JogoNaoEncontradoException("Um ou mais jogos solicitados não foram encontrados");
         }
 
         if (!inventarioRepositoryPort.verficarDisponibilidade(command.jogosIds())) {
-            throw new RuntimeException("Jogo indisponivel");
+            throw new JogoNaoDisponivelException("Jogo indisponivel");
         }
 
         BigDecimal valorTotal = calcularValor(jogosParaAlugar, command.diasAluguel());
 
-        //4.Procesar pagamento
 //        if(!gatewayPagamentoPort.autorizarPagamento(valorTotal, /*dados do cliente*/)) {
 //            throw new RuntimeException("Pagamento Recusado")
 //        }
@@ -67,7 +70,6 @@ public class CriarPedidoAluguelService {
         inventarioRepositoryPort.atualizarStatus(command.jogosIds(), StatusInventario.INDISPONIVEL);
         //notificacaoPort.notificarNovoPedido(pedidoSalvo);
 
-        // 6. Retornar o pedido criado
         return pedidoSalvo;
     }
 

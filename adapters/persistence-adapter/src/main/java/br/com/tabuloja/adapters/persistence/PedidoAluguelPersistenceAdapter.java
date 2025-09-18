@@ -6,6 +6,9 @@ import br.com.tabuloja.application.port.PedidoAluguelRepositoryPort;
 import br.com.tabuloja.domain.PedidoAluguel;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Component
 public class PedidoAluguelPersistenceAdapter implements PedidoAluguelRepositoryPort {
 
@@ -22,5 +25,10 @@ public class PedidoAluguelPersistenceAdapter implements PedidoAluguelRepositoryP
         PedidoAluguelJpaEntity pedidoAluguelJpaEntity = mapper.paraEntidade(pedidoAluguel);
 
         return mapper.paraDominio(pedidoAluguelRepository.save(pedidoAluguelJpaEntity));
+    }
+
+    public Optional<PedidoAluguel> buscarPorId(UUID id) {
+        Optional<PedidoAluguelJpaEntity> entidadeOptional = pedidoAluguelRepository.findById(id);
+        return entidadeOptional.map(mapper::paraDominio);
     }
 }
