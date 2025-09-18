@@ -1,0 +1,27 @@
+@startuml C4_Conteineres_Tabuloja
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Diagrama de Contêineres do Sistema - Tabuloja
+
+Person(cliente, "Cliente da Loja", "Pessoa que deseja alugar jogos de tabuleiro.")
+Person(admin, "Administrador", "Funcionário que gerencia o catálogo e os pedidos.")
+
+System_Ext(gateway_pagamento, "Gateway de Pagamento", "Processa as transações financeiras.")
+System_Ext(servico_email, "Serviço de E-mail", "Envia e-mails de notificação.")
+
+System_Boundary(tabuloja_boundary, "Sistema Tabuloja") {
+    Container(api, "Aplicação API", "Java 21 / Spring Boot", "Disponibiliza a API REST para todas as funcionalidades da loja.")
+    ContainerDb(db, "Banco de Dados", "Relacional (H2/PostgreSQL)", "Armazena informações de clientes, jogos, aluguéis, etc.")
+}
+
+Rel(cliente, api, "Usa", "HTTPS/JSON")
+Rel(admin, api, "Usa", "HTTPS/JSON")
+
+Rel(api, db, "Lê e Escreve", "JDBC")
+
+Rel(api, gateway_pagamento, "Processa pagamentos", "HTTPS/JSON")
+Rel(api, servico_email, "Envia notificações", "HTTPS/JSON")
+
+@enduml

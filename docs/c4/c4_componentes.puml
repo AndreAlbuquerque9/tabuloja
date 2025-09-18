@@ -1,0 +1,30 @@
+@startuml C4_Componentes_Tabuloja
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Diagrama de Componentes - Contêiner "Aplicação API"
+
+Container_Boundary(api_boundary, "Aplicação API") {
+
+    Component(controllers, "Controllers", "Spring MVC", "Recebe requisições HTTP e delega para os serviços de aplicação. (web-adapter)")
+
+    Component(services, "Application Services", "Java", "Contém a lógica de negócio e os casos de uso. (application)")
+
+    Component(ports, "Ports", "Java Interfaces", "Define os contratos (interfaces) para a camada de persistência e outros gateways. (application)")
+
+    Component(adapters, "Persistence Adapters", "Spring Data JPA", "Implementa os Ports de repositório para interagir com o banco de dados. (persistence-adapter)")
+
+    Component(domain, "Domain Model", "Java Records", "Define os objetos e regras de negócio do núcleo. (core-domain)")
+}
+
+SystemDb_Ext(db, "Banco de Dados", "Armazena os dados da aplicação.")
+
+Rel(controllers, services, "Chama", "Usa")
+Rel(services, ports, "Depende de", "Define")
+Rel(adapters, ports, "Implementa", "JDBC")
+Rel(adapters, db, "Lê e Escreve em", "JDBC")
+Rel(services, domain, "Usa")
+
+
+@enduml
